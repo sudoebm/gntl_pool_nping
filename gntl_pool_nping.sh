@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define terminal colors for better user interface
+# Colors
 BLUE=$(tput setaf 24)
 GRAY=$(tput setaf 7)
 PURPLE=$(tput setaf 93)
@@ -9,16 +9,42 @@ GREEN=$(tput setaf 82)
 WHITE=$(tput setab 235)
 SEPARATOR="${BLUE}${WHITE}------------------------------------------------------------------------------${RESET}"
 
+# Detect OS name and version
+if command -v lsb_release &>/dev/null; then
+    os_name=$(lsb_release -is)
+    os_version=$(lsb_release -rs)
+else
+    os_name="Unknown"
+    os_version="Unknown"
+fi
+
+echo "${GREEN}Detected OS:${RESET} ${GREEN}$os_name $os_version${RESET}"
+echo "$SEPARATOR"
+
 # Check for nping installation (part of nmap package)
 if ! which nping > /dev/null; then
     echo "The nping utility (part of the ${PURPLE}nmap${RESET} package) is not installed."
-    # Offer the user the opportunity to install nmap if it isn't installed
     read -p "Would you like to install ${PURPLE}nmap${RESET}? (Y/n) " response
     case $response in
         [yY][eE][sS]|[yY])
-            echo "Installing ${PURPLE}nmap${RESET}..."
-            sudo apt update
-            sudo apt install -y nmap
+            # Install nmap
+            install_nmap() {
+                local package_managers=("apt" "yum" "dnf" "zypper")  # Add more package managers if needed
+
+                for manager in "${package_managers[@]}"; do
+                    if command -v "$manager" &>/dev/null; then
+                        echo "Installing nmap using $manager..."
+                        sudo "$manager" update
+                        sudo "$manager" install -y nmap
+                        return 0  # Successful installation
+                    fi
+                done
+
+                echo "Unable to install nmap. Please install it manually and rerun the script."
+                return 1  # Unsuccessful installation
+            }
+
+            install_nmap
             ;;
         *)
             echo "This script requires nping (part of ${PURPLE}nmap${RESET}) to function. Exiting..."
@@ -44,11 +70,10 @@ declare -A pools=(
 
 results=()
 
-# Function to capture user input for which pools they want to test
+# Capture user input for which pools to test
 get_user_choice() {
     local choice
     local valid
-    # Include an "All" and "Exit" option for user convenience
     local options=("${!pools[@]}" "All" "Exit")
 
     echo "Available pools:"
@@ -90,7 +115,7 @@ get_user_choice() {
     done
 }
 
-# Function to display a progress bar during testing
+# Display a progress bar during testing
 print_progress() {
     current=$1
     total=$2
