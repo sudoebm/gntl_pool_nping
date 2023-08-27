@@ -40,5 +40,5 @@ This script requires the `nping` utility, which is part of the [`nmap`](https://
 
 1.0.0 Initial Commit
 1.1.0 Multi system functionality
-  Added functionality to detect which OS is being used.
-  Added functionality for package managers yum, dnf, and zypper. 
+  Added functionality to detect which OS is being used.  
+  Added functionality for package managers yum, dnf, and zypper.  
