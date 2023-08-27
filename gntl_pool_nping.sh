@@ -9,7 +9,29 @@ GREEN=$(tput setaf 82)
 WHITE=$(tput setab 235)
 SEPARATOR="${BLUE}${WHITE}------------------------------------------------------------------------------${RESET}"
 
-# Detect OS name and version
+# Function to install nmap
+install_nmap() {
+    local package_managers=("apt" "yum" "dnf" "zypper")  # Add more package managers in the future
+
+    for manager in "${package_managers[@]}"; do
+        if command -v "$manager" &>/dev/null; then
+            echo "Installing nmap using $manager..."
+            sudo "$manager" update
+            sudo "$manager" install -y nmap
+            if which nping > /dev/null; then
+                echo "nmap installation successful."
+            else
+                echo "Unable to verify nping installation. Please make sure nping is installed."
+            fi
+            return 0  # Successful installation
+        fi
+    done
+
+    echo "Unable to install nmap. Please install it manually and rerun the script."
+    return 1  # Installation failed
+}
+
+# Detect OS name and version using lsb_release
 if command -v lsb_release &>/dev/null; then
     os_name=$(lsb_release -is)
     os_version=$(lsb_release -rs)
@@ -19,31 +41,15 @@ else
 fi
 
 echo "${GREEN}Detected OS:${RESET} ${GREEN}$os_name $os_version${RESET}"
-echo "$SEPARATOR"
+echo "$SEPARATOR"  # Separator line
 
 # Check for nping installation (part of nmap package)
 if ! which nping > /dev/null; then
     echo "The nping utility (part of the ${PURPLE}nmap${RESET} package) is not installed."
+    # Offer the user the opportunity to install nmap using different package managers
     read -p "Would you like to install ${PURPLE}nmap${RESET}? (Y/n) " response
     case $response in
         [yY][eE][sS]|[yY])
-            # Install nmap
-            install_nmap() {
-                local package_managers=("apt" "yum" "dnf" "zypper")  # Add more package managers if needed
-
-                for manager in "${package_managers[@]}"; do
-                    if command -v "$manager" &>/dev/null; then
-                        echo "Installing nmap using $manager..."
-                        sudo "$manager" update
-                        sudo "$manager" install -y nmap
-                        return 0  # Successful installation
-                    fi
-                done
-
-                echo "Unable to install nmap. Please install it manually and rerun the script."
-                return 1  # Unsuccessful installation
-            }
-
             install_nmap
             ;;
         *)
@@ -74,9 +80,12 @@ results=()
 get_user_choice() {
     local choice
     local valid
+    # Include an "All" and "Exit" option for user convenience
     local options=("${!pools[@]}" "All" "Exit")
 
     echo "Available pools:"
+    clear  # Clear the screen
+    sleep 1 # Pause for a second
     for i in "${!options[@]}"; do
         echo "$((i+1)). ${options[$i]}"
     done
@@ -152,18 +161,18 @@ for host in "${chosen_pools[@]}"; do
     results+=("Avg RTT: $avg_rtt ms - Pool: $host, Port: $port")
 done
 
-clear
-sleep 1
-echo
-
 # Sort results by RTT
-IFS=$'\n' sorted_results=($(sort -k 2 -n <<< "${results[*]}"))
-unset IFS
+sort_results() {
+    IFS=$'\n' sorted_results=($(echo "${results[*]}" | sort -t':' -k2 -n))
+    unset IFS
+}
 
+sort_results
+
+# Display sorted results
 echo "${GRAY}+----------------------------------------------+"
 echo "|              Pools sorted by RTT             |"
 echo "+----------------------------------------------+${RESET}"
-
 
 for result in "${sorted_results[@]}"; do
     rtt_value=$(echo "$result" | grep -Eo 'Avg RTT: [0-9.]+ ms')
@@ -172,13 +181,12 @@ for result in "${sorted_results[@]}"; do
 done
 
 # Find the pool with the shortest RTT
-shortest_rtt=$(printf "%s\n" "${sorted_results[@]}" | grep -Eo 'Avg RTT: [0-9.]+' | awk '{print $3}' | sort -n | head -n 1)
-shortest_pool=$(printf "%s\n" "${sorted_results[@]}" | grep "Avg RTT: $shortest_rtt" | awk -F 'Pool: ' '{print $2}' | head -n 1)
+shortest_rtt=$(echo "${sorted_results[0]}" | grep -Eo '[0-9.]+' | head -n 1)
+shortest_pool=$(echo "${sorted_results[0]}" | grep -Eo 'Pool: .+' | awk -F 'Pool: ' '{print $2}')
 
 echo "$SEPARATOR"
 echo "${GRAY}Result:${RESET}"
 echo -e "${BLUE}Shortest RTT${RESET}: $shortest_rtt ms"
 echo -e "${GREEN}Pool${RESET}: $shortest_pool"
 echo "$SEPARATOR"
-echo
 echo
