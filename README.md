@@ -35,3 +35,10 @@ This script is inspired by the work of Acktarius and his script [`ping_ccx_pool`
 This script requires the `nping` utility, which is part of the [`nmap`](https://github.com/nmap/nmap) package, to function properly. If `nping` is not installed, the script will prompt you to install the necessary package.
 
 **Disclaimer:** Please be aware that this script is currently in its alpha stage and is undergoing testing. It is provided on an "as is" basis, and I assume no responsibility for any potential damages resulting from its use. Use it responsibly and at your own risk.
+
+## Change_Log
+
+1.0.0 Initial Commit
+1.1.0 Multi system functionality
+  Added functionality to detect which OS is being used.
+  Added functionality for package managers yum, dnf, and zypper. 
