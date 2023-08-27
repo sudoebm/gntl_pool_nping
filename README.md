@@ -24,7 +24,7 @@ The script will test the RTT of various cryptocurrency mining pools and provide 
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0.
+This project is licensed under the **GNU General Public License Version 2**, June 1991.
 
 ## Acknowledgments
 
