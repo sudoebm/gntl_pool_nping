@@ -41,12 +41,12 @@ else
 fi
 
 echo "${GREEN}Detected OS:${RESET} ${GREEN}$os_name $os_version${RESET}"
-echo "$SEPARATOR"  # Separator line
+echo "$SEPARATOR"
 
-# Check for nping installation (part of nmap package)
+# Check for nping installation
 if ! which nping > /dev/null; then
     echo "The nping utility (part of the ${PURPLE}nmap${RESET} package) is not installed."
-    # Offer the user the opportunity to install nmap using different package managers
+    # Install nmap
     read -p "Would you like to install ${PURPLE}nmap${RESET}? (Y/n) " response
     case $response in
         [yY][eE][sS]|[yY])
@@ -59,7 +59,7 @@ if ! which nping > /dev/null; then
     esac
 fi
 
-# Declare the available pools and their ports
+# Pool array
 declare -A pools=(
     ["pool.gntl.uk"]="10007"
     ["pool.gntl.cash"]="10007"
@@ -80,12 +80,12 @@ results=()
 get_user_choice() {
     local choice
     local valid
-    # Include an "All" and "Exit" option for user convenience
+    # Include an "All" and "Exit" option
     local options=("${!pools[@]}" "All" "Exit")
 
     echo "Available pools:"
-    clear  # Clear the screen
-    sleep 1 # Pause for a second
+    clear
+    sleep 1
     for i in "${!options[@]}"; do
         echo "$((i+1)). ${options[$i]}"
     done
@@ -98,7 +98,7 @@ get_user_choice() {
         chosen_pools=()
 
         for item in "${chosen[@]}"; do
-            # Check for valid input
+            # Input Validation
             if [[ $item -lt 1 || $item -gt ${#options[@]} ]]; then
                 valid=false
                 break
@@ -141,7 +141,7 @@ print_progress() {
     printf "] %3d%%\r" "$percent"
 }
 
-# Capture user input on which pools to test
+# Capture user input on which pools to test (For future use)
 get_user_choice
 
 # Initialize counter variables
