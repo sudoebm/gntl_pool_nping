@@ -38,10 +38,25 @@ This script requires the `nping` utility, which is part of the [`nmap`](https://
 
 ## Change_Log
 
--  1.0.0 Initial Commit
--  1.1.0 Multi system functionality
+-  ## 1.0.0-a.1 Initial Commit
+-  ## 1.1.0-a.1 Multi system functionality
    - Added functionality to detect which OS is being used.  
    - Added functionality for package managers yum, dnf, and zypper.  
+-  ## 1.2.0-a.1
+   Minor changes:
+   - Added Debug mode for testing
+   - Colors fleshed out better
+   - check_command_installed - jq and nmap
+   - OS detection for later
+   - User pool choice input validation tuned
+   - Progress bar tuned
+   Major changes:
+   - Moved from a static array for pools to dynamically fetching pool data via an API.
+   - Though not all API data is currently in use, it lays the foundation for upcoming enhancements and features.
+
+
+
+
 
 ## Authors
 
