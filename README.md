@@ -32,7 +32,7 @@ This script is inspired by the work of Acktarius and his script [`ping_ccx_pool`
 
 ## Dependencies
 
-This script requires the `nping` utility, which is part of the [`nmap`](https://github.com/nmap/nmap) package, to function properly. If `nping` is not installed, the script will prompt you to install the necessary package.
+To function properly, this script requires the `nping` utility and the `jq` utility, which are part of the [`nmap`](https://github.com/nmap/nmap) package and [`jq`](https://github.com/jqlang/jq) respectively. If `nping` or `jq` are not installed, the script will prompt you to install the necessary packages.
 
 **Disclaimer:** Please be aware that this script is currently in its alpha stage and is undergoing testing. It is provided on an "as is" basis, and I assume no responsibility for any potential damages resulting from its use. Use it responsibly and at your own risk.
 
