@@ -50,7 +50,8 @@ This script requires the `nping` utility, which is part of the [`nmap`](https://
    - OS detection for later
    - User pool choice input validation tuned
    - Progress bar tuned
-   Major changes:
+
+  Major changes:
    - Moved from a static array for pools to dynamically fetching pool data via an API.
    - Though not all API data is currently in use, it lays the foundation for upcoming enhancements and features.
 
